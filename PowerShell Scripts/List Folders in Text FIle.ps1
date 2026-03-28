@@ -1,3 +1,6 @@
+# This script is just another verion of the File_Name_Export script.
+# This one was created when trying to convert a large amount of PS1 bin/cue files in to CHD format.
+
 # ====== CONFIG ======
 $SourceDir = "H:\LaunchBox\Games\Sony Playstation"
 $OutputFile = "H:\LaunchBox\Games\Sony Playstation\folder_list.txt"
