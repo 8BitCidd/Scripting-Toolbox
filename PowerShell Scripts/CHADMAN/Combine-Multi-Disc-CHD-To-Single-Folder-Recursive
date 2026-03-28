@@ -1,0 +1,91 @@
+# ====== CONFIG ======
+$SourceDir = "H:\LaunchBox\Games\Sony Playstation\_CHD"
+$Recursive = $true
+# ====================
+
+$Errors = @()
+
+# Get all CHD files first (snapshot)
+$chdFiles = Get-ChildItem -Path $SourceDir -Filter *.chd -Recurse:$Recursive
+
+foreach ($chd in $chdFiles) {
+    try {
+        # Extract base game name
+        $gameName = ($chd.BaseName -replace '\s*\(Disc\s*\d+\)$', '').Trim()
+
+        if ([string]::IsNullOrWhiteSpace($gameName)) {
+            throw "Unable to determine game name"
+        }
+
+        # One canonical folder per game (directly under SourceDir)
+        $gameFolder = Join-Path $SourceDir $gameName
+
+        if (-not (Test-Path $gameFolder)) {
+            New-Item -ItemType Directory -Path $gameFolder -ErrorAction Stop | Out-Null
+        }
+
+        $targetPath = Join-Path $gameFolder $chd.Name
+
+        # Skip if already in correct folder
+        if ($chd.Directory.FullName -eq $gameFolder) {
+            continue
+        }
+
+        # Skip if file already exists
+        if (Test-Path $targetPath) {
+            continue
+        }
+
+        Move-Item -Path $chd.FullName -Destination $targetPath -ErrorAction Stop
+        Write-Host "Moved: $($chd.Name) → $gameFolder" -ForegroundColor Green
+    }
+    catch {
+        Write-Host "ERROR: $($chd.FullName)" -ForegroundColor Red
+        Write-Host $_.Exception.Message -ForegroundColor DarkRed
+
+        $Errors += [PSCustomObject]@{
+            File  = $chd.FullName
+            Error = $_.Exception.Message
+        }
+    }
+}
+
+# ====== CLEANUP PHASE ======
+Write-Host "`nCleaning up empty folders..." -ForegroundColor Cyan
+
+# Get directories deepest-first so parents are removed last
+$dirs = Get-ChildItem -Path $SourceDir -Directory -Recurse |
+        Sort-Object { $_.FullName.Length } -Descending
+
+foreach ($dir in $dirs) {
+
+    # Never delete the source root
+    if ($dir.FullName -eq $SourceDir) {
+        continue
+    }
+
+    # Delete only if truly empty
+    if (-not (Get-ChildItem -Path $dir.FullName -Force)) {
+        try {
+            Remove-Item -Path $dir.FullName -Force -ErrorAction Stop
+            Write-Host "Deleted empty folder: $($dir.FullName)" -ForegroundColor DarkGray
+        }
+        catch {
+            Write-Host "Failed to delete folder: $($dir.FullName)" -ForegroundColor Yellow
+        }
+    }
+}
+
+Write-Host "`nCHD grouping and cleanup complete." -ForegroundColor Magenta
+
+# ====== ERROR SUMMARY ======
+if ($Errors.Count -gt 0) {
+    Write-Host "`nErrors encountered:" -ForegroundColor Red
+    foreach ($e in $Errors) {
+        Write-Host "File: $($e.File)" -ForegroundColor Red
+        Write-Host "Reason: $($e.Error)`n" -ForegroundColor DarkRed
+    }
+}
+else {
+    Write-Host "`nNo errors detected 🎉" -ForegroundColor Green
+}
