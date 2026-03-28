@@ -1,4 +1,6 @@
-﻿# ====== CONFIG ======
+# This script was created to autmate the process of converting PS2 bin/cue files into a CHD file.
+
+# ====== CONFIG ======
 $SourceDir = "H:\LaunchBox\Games\Sony Playstation 2"
 $OutputDir = "H:\LaunchBox\Games\Sony Playstation 2\_CHD"
 $Chdman    = "H:\LaunchBox\Games\Sony Playstation 2\_CHD\chdman.exe"
