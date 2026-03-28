@@ -1,3 +1,5 @@
+# This script was created to merge mutliple CHD files for multi-disc PS1 games into one folder reduing the number of folders needed for each game since hte CHD files was the equivalent of an ISO.
+
 # ====== CONFIG ======
 $SourceDir = "H:\LaunchBox\Games\Sony Playstation\_CHD"
 $Recursive = $true
