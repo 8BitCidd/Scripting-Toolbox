@@ -1,5 +1,6 @@
-#This script was initially created to get a list of zip files names and export them to a text file.
-#You can use this script to do the same thing with just about any file, but it was used specifically to grab the names of things like folders for use with other scripts or for whatever you could possibly need it for without having to manually copy each and every file name files names.
+# This script was created to extract ZIP file names and export them to a text file.
+# It can be adapted for any file type and is useful for quickly listing files or folders
+# for use in other scripts—eliminating the need to manually copy names.
 
 Get-ChildItem "H:\LaunchBox\Games\Nintendo Game Boy" -File |
 Select-Object -ExpandProperty Name |
