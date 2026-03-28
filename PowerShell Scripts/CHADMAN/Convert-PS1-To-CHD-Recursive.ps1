@@ -1,4 +1,6 @@
-﻿# ====== CONFIG ======
+# This script was created to autmate the process of converting PS1 bin/cue files into a CHD file.
+ 
+# ====== CONFIG ======
 $SourceDir = "H:\LaunchBox\Games\Sony Playstation"
 $OutputDir = "H:\LaunchBox\Games\Sony Playstation\_CHD"
 $Chdman    = "H:\LaunchBox\Games\Sony Playstation\_CHD\chdman.exe"
