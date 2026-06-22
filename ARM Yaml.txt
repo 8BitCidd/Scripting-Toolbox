@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  makemkv:
+    image: jlesage/makemkv:latest
+    container_name: makemkv
+    restart: unless-stopped
+    ports:
+      - "5800:5800"
+    environment:
+      - TZ=America/New_York
+      - USER_ID=0
+      - GROUP_ID=0
+      - APP_NICENESS=19
+      - SECURE_CONNECTION=1
+      - DARK_MODE=1
+      - AUTO_DISC_RIPPER=1
+      - AUTO_DISC_RIPPER_EJECT=1
+    volumes:
+      - makemkv_config:/config:rw
+      - /mnt/truenas_movies/ripping_scratch:/output:rw # MakeMKV drops massive raw files here
+    devices:
+      - /dev/sr0:/dev/sr0  # Moved to MakeMKV where it belongs
+      - /dev/sg1:/dev/sg1
+
+  handbrake:
+    image: jlesage/handbrake:latest
+    container_name: handbrake
+    restart: unless-stopped
+    ports:
+      - "5801:5800"
+    environment:
+      - TZ=America/New_York
+      - HANDBRAKE_DEBUG=0
+      - USER_ID=0
+      - GROUP_ID=0
+    volumes:
+      - /opt/appdata/handbrake:/config
+      - /mnt/truenas_movies/ripping_scratch:/watch:rw # HandBrake watches the raw scratch folder
+      - /mnt/truenas_movies:/output:rw               # HandBrake saves the clean, compressed files to your main library
+
+volumes:
+  makemkv_config:
